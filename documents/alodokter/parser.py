@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-
+import concurrent.futures
 from . import request
 
 
@@ -16,11 +16,17 @@ def search2dict(html: str):
                 "url_path": url_path,
                 "image_url": card_post["image-url"],
                 "category": card_post["category"],
-                "label": card_post["label"],
                 "title": card_post["title"],
                 "short_description": card_post["short-description"].replace("...", ""),
-                "content": request.get_article(url_path)
             })
+
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=30)
+    futures = []
+    for result in results:
+        futures.append(pool.submit(request.get_article, result["url_path"]))
+    concurrent.futures.wait(futures)
+    for index, future in enumerate(futures):
+        results[index]["article"] = future.result()
 
     return results
 
