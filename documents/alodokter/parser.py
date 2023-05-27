@@ -56,6 +56,23 @@ def search2dict(html: str):
     return results
 
 
+def search_image_to_dict(html: str):
+    soup = BeautifulSoup(html, "html.parser")
+    search_result = soup.find("div", {"id": "articles-result", "class": "search-result"})
+    card_posts = search_result.find_all("card-post-index")
+
+    results = []
+    for card_post in card_posts:
+        url_path = "https://www.alodokter.com" + card_post["url-path"]
+        if "e-book-covid-19" not in url_path and "no-pic" not in card_post["image-url"]:
+            results.append({
+                "image_url": card_post["image-url"].replace("w_300,h_166,c_fill/", ""),
+                "title": card_post["title"],
+            })
+
+    return results
+
+
 def parse_article(html: str):
     soup = BeautifulSoup(html, "html.parser")
     return soup.find("div", {"class": "post-content"}).get_text()
