@@ -9,7 +9,7 @@ class Sanitizer:
         self.text = text
 
     def sanitize(self):
-        self.remove_punctuation().lower().strip().stimulate()
+        self.remove_punctuation().lower().strip()
         return self.text
 
     def lower(self):
